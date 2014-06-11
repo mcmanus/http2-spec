@@ -1163,16 +1163,39 @@ else
                         target="ORIGIN">web origins</xref> are made by mutually
                         distrustful entities.
                     </t>
+                </section>
+
+                <section title="Detection">
                     <t>
-                        Assuming no additional constraints, multiplexing in
-                        HTTP/2 enables multiple attempts to guess values from
-                        the header table, up to the concurrency limit imposed by
-                        the peer in the SETTINGS_MAX_CONCURRENT_STREAMS setting.
-                        This depends on the attacker being on the communications
-                        path so that they are able to see and block packets.
-                        Beyond this limit, or for an entirely passive attacker,
-                        attempts to guess header table state can be detected by
-                        a peer.
+                        Detection of an ongoing attack of this sort at a peer is
+                        confounded difficult by the multiplexing features in
+                        HTTP/2.  An attacker can permit the establishment of
+                        entries in the header table, then block further
+                        application data.  This prevents either peer from being
+                        able to detect an attack.
+                    </t>
+                    <t>
+                        On the client side, multiple attempts can be made to
+                        guess values, up to the concurrency limit imposed by the
+                        server in the SETTINGS_MAX_CONCURRENT_STREAMS setting.
+                        On the server side, each guess in a response needs a
+                        corresponding request.  However, with server push, the
+                        only limit on the number of PUSH_PROMISE frames that can
+                        be sent is the space available for server streams, which
+                        permits up to 2<x:sup>30</x:sup> streams.
+                        <list style="hanging">
+                            <t hangText="Note:">
+                                TCP acknowledgements are not authenticated,
+                                which means that the TCP congestion window does
+                                not limit the ability of an attacker to test
+                                guesses up to these limits.
+                            </t>
+                        </list>
+                    </t>
+                    <t>
+                        Beyond these limits, or for an entirely passive
+                        attacker, attempts to guess header table state can be
+                        detected by a peer.
                     </t>
                 </section>
 
